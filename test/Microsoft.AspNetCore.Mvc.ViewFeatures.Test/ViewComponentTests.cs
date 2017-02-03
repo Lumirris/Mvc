@@ -158,6 +158,42 @@ namespace Microsoft.AspNetCore.Mvc
         }
 
         [Fact]
+        public void ViewComponent_View_WithViewNameAndNullModelParameter_SetsResultViewWithViewNameAndNullModel()
+        {
+            // Arrange
+            var viewComponent = new TestViewComponent();
+
+            // Act
+            var actualResult = viewComponent.View("CustomViewName", model: null as object);
+
+            // Assert
+            Assert.IsType<ViewViewComponentResult>(actualResult);
+            Assert.IsType<ViewDataDictionary<object>>(actualResult.ViewData);
+            Assert.NotSame(viewComponent.ViewData, actualResult.ViewData);
+            Assert.Equal(new ViewDataDictionary<object>(viewComponent.ViewData), actualResult.ViewData);
+            Assert.Null(actualResult.ViewData.Model);
+            Assert.Equal("CustomViewName", actualResult.ViewName);
+        }
+
+        [Fact]
+        public void ViewComponent_View_WithViewNameAndNonObjectNullModelParameter_SetsResultViewWithViewNameAndNullModel()
+        {
+            // Arrange
+            var viewComponent = new TestViewComponent();
+
+            // Act
+            var actualResult = viewComponent.View<string>("CustomViewName", model: null);
+
+            // Assert
+            Assert.IsType<ViewViewComponentResult>(actualResult);
+            Assert.IsType<ViewDataDictionary<string>>(actualResult.ViewData);
+            Assert.NotSame(viewComponent.ViewData, actualResult.ViewData);
+            Assert.Equal(new ViewDataDictionary<string>(viewComponent.ViewData), actualResult.ViewData);
+            Assert.Null(actualResult.ViewData.Model);
+            Assert.Equal("CustomViewName", actualResult.ViewName);
+        }
+
+        [Fact]
         public void ViewComponent_View_WithViewNameAndModelParameters_SetsResultViewWithCustomViewNameAndModel()
         {
             // Arrange

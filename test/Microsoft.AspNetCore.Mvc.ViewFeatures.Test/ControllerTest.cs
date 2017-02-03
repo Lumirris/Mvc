@@ -198,6 +198,137 @@ namespace Microsoft.AspNetCore.Mvc.Test
         }
 
         [Fact]
+        public void Controller_PartialView_WithoutParameter_SetsResultNullViewNameAndNullViewDataModelAndSameTempData()
+        {
+            // Arrange
+            var controller = new TestableController()
+            {
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider()),
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()),
+            };
+
+            // Act
+            var actualViewResult = controller.PartialView();
+
+            // Assert
+            Assert.IsType<PartialViewResult>(actualViewResult);
+            Assert.Null(actualViewResult.ViewName);
+            Assert.Same(controller.ViewData, actualViewResult.ViewData);
+            Assert.Same(controller.TempData, actualViewResult.TempData);
+            Assert.Null(actualViewResult.ViewData.Model);
+        }
+
+        [Fact]
+        public void Controller_PartialView_WithoutParameter_MaintainsModelInViewData()
+        {
+            // Arrange
+            var controller = new TestableController()
+            {
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider()),
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()),
+            };
+
+            var model = new object();
+            controller.ViewData.Model = model;
+
+            // Act
+            var actualViewResult = controller.PartialView();
+
+            // Assert
+            Assert.IsType<PartialViewResult>(actualViewResult);
+            Assert.Null(actualViewResult.ViewName);
+            Assert.Same(controller.ViewData, actualViewResult.ViewData);
+            Assert.Same(controller.TempData, actualViewResult.TempData);
+            Assert.Same(model, actualViewResult.ViewData.Model);
+        }
+
+        [Fact]
+        public void Controller_PartialView_WithParameterViewName_SetsResultViewNameAndNullViewDataModelAndSameTempData()
+        {
+            // Arrange
+            var controller = new TestableController()
+            {
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider()),
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()),
+            };
+
+            // Act
+            var actualViewResult = controller.PartialView("CustomViewName");
+
+            // Assert
+            Assert.IsType<PartialViewResult>(actualViewResult);
+            Assert.Equal("CustomViewName", actualViewResult.ViewName);
+            Assert.Same(controller.ViewData, actualViewResult.ViewData);
+            Assert.Same(controller.TempData, actualViewResult.TempData);
+            Assert.Null(actualViewResult.ViewData.Model);
+        }
+
+        [Fact]
+        public void Controller_PartialView_WithParameterViewModel_SetsResultNullViewNameAndViewDataModelAndSameTempData()
+        {
+            // Arrange
+            var controller = new TestableController()
+            {
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider()),
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()),
+            };
+            var model = new object();
+
+            // Act
+            var actualViewResult = controller.PartialView(model);
+
+            // Assert
+            Assert.IsType<PartialViewResult>(actualViewResult);
+            Assert.Null(actualViewResult.ViewName);
+            Assert.Same(controller.ViewData, actualViewResult.ViewData);
+            Assert.Same(controller.TempData, actualViewResult.TempData);
+            Assert.Same(model, actualViewResult.ViewData.Model);
+        }
+
+        [Fact]
+        public void Controller_PartialView_WithParameterViewNameAndViewModel_SetsResultViewNameAndViewDataModelAndSameTempData()
+        {
+            // Arrange
+            var controller = new TestableController()
+            {
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider()),
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()),
+            };
+            var model = new object();
+
+            // Act
+            var actualViewResult = controller.PartialView("CustomViewName", model);
+
+            // Assert
+            Assert.IsType<PartialViewResult>(actualViewResult);
+            Assert.Equal("CustomViewName", actualViewResult.ViewName);
+            Assert.Same(controller.ViewData, actualViewResult.ViewData);
+            Assert.Same(controller.TempData, actualViewResult.TempData);
+            Assert.Same(model, actualViewResult.ViewData.Model);
+        }
+
+        [Fact]
+        public void Controller_PartialView_WithParameterNullViewModel_MaintainsNullModel()
+        {
+            // Arrange
+            var controller = new TestableController()
+            {
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider()),
+                TempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>()),
+            };
+
+            // Act
+            var actualViewResult = controller.PartialView(model: null);
+
+            // Assert
+            Assert.IsType<PartialViewResult>(actualViewResult);
+            Assert.Null(actualViewResult.ViewName);
+            Assert.Same(controller.ViewData, actualViewResult.ViewData);
+            Assert.Same(controller.TempData, actualViewResult.TempData);
+            Assert.Null(actualViewResult.ViewData.Model);
+        }
+
+        [Fact]
         public void Controller_Json_WithParameterValue_SetsResultData()
         {
             // Arrange
